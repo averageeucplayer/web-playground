@@ -2,3 +2,7 @@
 @import "@fontsource-variable/geist-mono";
 
 @import "tailwindcss";
+
+html, body {
+    background: black;
+}
