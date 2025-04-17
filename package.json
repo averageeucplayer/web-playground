@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "tsc && vite build --base=/web-playground"
+    "build": "vite build --base=/web-playground"
   },
   "dependencies": {
     "@fontsource-variable/geist-mono": "^5.0.1",

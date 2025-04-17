@@ -4,6 +4,7 @@
         "outDir": "dist",
         "allowJs": true,
         "checkJs": true,
+        "lib": ["ES2015"],
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
