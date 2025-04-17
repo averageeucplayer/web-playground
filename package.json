@@ -5,17 +5,17 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/averageeucplayer/lost-metrics-web#readme",
+  "homepage": "https://github.com/averageeucplayer/web-playground#readme",
   "bugs": {
-    "url": "https://github.com/averageeucplayer/lost-metrics-web/issues"
+    "url": "https://github.com/averageeucplayer/web-playground/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/averageeucplayer/lost-metrics-web"
+    "url": "git+https://github.com/averageeucplayer/web-playground"
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build --base=/web-playground"
+    "build": "vite build"
   },
   "dependencies": {
     "@fontsource-variable/geist-mono": "^5.0.1",
