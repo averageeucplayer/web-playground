@@ -1,53 +1,11 @@
 <script lang="ts">
-    import { load, type Player, type Skill } from "$lib/data";
-    import RainbowOff from "@tabler/icons-svelte/icons/rainbow-off";
+    import { buildComparisonRows, echarts, generateDamageDistributionChart, load, type Player, type Skill, type SkillComparison } from "$lib/data";
+    import type { EChartsOption } from "echarts";
     import { onMount } from "svelte";
 
-    let summary1: Player | null = null;
-    let summary2: Player | null = null;
-
-    interface SkillComparison {
-        name: string;
-        icon: string;
-        skill1?: Skill;
-        skill2?: Skill;
-    }
-
-    let comparisonRows: SkillComparison[] = [];
-
-    function buildComparisonRows(p1: Player, p2: Player): SkillComparison[] {
-        const names = Array.from(new Set([
-            ...p1.skills.map(s => s.name),
-            ...p2.skills.map(s => s.name)
-        ])).sort();
-
-        const result = names.map(name => {
-            const skill1 = p1.skills.find(s => s.name === name);
-            const skill2 = p2.skills.find(s => s.name === name);
-            const icon = skill1?.iconSrc || skill2?.iconSrc || "";
-
-            return {
-                name,
-                icon,
-                skill1,
-                skill2
-            };
-        });
-
-        result.sort((a, b) => {
-            const damageA = Math.max(
-                a.skill1?.totalDamage.raw || 0,
-                a.skill2?.totalDamage.raw || 0
-            );
-            const damageB = Math.max(
-                b.skill1?.totalDamage.raw || 0,
-                b.skill2?.totalDamage.raw || 0
-            );
-            return damageB - damageA; // descending
-        });
-
-        return result;
-    }
+    let summary1: Player | null = $state(null);
+    let summary2: Player | null = $state(null);
+    let comparisonRows = $state<SkillComparison[]>([]);
 
     onMount(() => {
         const { summary1: s1, summary2: s2 } = load();
@@ -75,9 +33,10 @@
       </div>
     </div>
   </div>
+  <div use:echarts={generateDamageDistributionChart(summary1, summary2)} class="p-[12px]" style="width: 100%; height: 200px;"></div>
   <div class="overflow-auto mt-4">
-    <table class="table-auto border-collapse border border-gray-400 w-full text-sm">
-      <thead class="bg-gray-500">
+    <table class="table-auto border-collapse border border-gray-900 w-full text-sm">
+      <thead class="bg-gray-700">
         <tr>
           <th class="border px-2 py-1 text-left">Skill</th>
           <th class="border px-2 py-1">{summary1.name}</th>
@@ -99,12 +58,12 @@
               <td class="border px-2 py-1 align-top w-[40%]">
                 {#if row.skill1}
                   <div class="my-2">
-                    <div class="relative h-5 bg-gray-400 rounded">
+                    <div class="relative h-5 bg-gray-600 rounded">
                       <div
                         class="absolute left-0 top-0 h-full bg-blue-800 rounded"
                         style="width: {row.skill1.damagePercentage.raw * 100}%"
                       ></div>
-                      <div class="relative text-xs text-black font-bold text-center leading-5 z-10">
+                      <div class="relative text-xs text-white font-bold text-center leading-5 z-10">
                         {row.skill1.damagePercentage.formatted}
                       </div>
                     </div>
@@ -122,12 +81,12 @@
               <td class="border px-2 py-1 align-top w-[40%]">
                 {#if row.skill2}
                   <div class="my-2">
-                    <div class="relative h-5 bg-gray-400 rounded">
+                    <div class="relative h-5 bg-gray-600 rounded">
                       <div
                         class="absolute left-0 top-0 h-full bg-green-800 rounded"
                         style="width: {row.skill2.damagePercentage.raw * 100}%"
                       ></div>
-                      <div class="relative text-xs text-black font-bold text-center leading-5 z-10">
+                      <div class="relative text-xs text-white font-bold text-center leading-5 z-10">
                         {row.skill2.damagePercentage.formatted}
                       </div>
                     </div>

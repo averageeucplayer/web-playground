@@ -1,3 +1,13 @@
+import type { EChartsOption } from "echarts";
+import * as charts from "echarts";
+
+export interface SkillComparison {
+    name: string;
+    icon: string;
+    skill1?: Skill;
+    skill2?: Skill;
+}
+
 export interface Player {
     name: string;
     skills: Skill[];
@@ -55,57 +65,57 @@ export const templateSkills: Pick<Skill, "id" | "name" | "iconSrc">[] = [
     {
         id: 25030,
         name: "Death Trance",
-        iconSrc: "/images/skills/BL_Skill_01_20.webp",
+        iconSrc: "./images/skills/BL_Skill_01_20.webp",
     },
     {
         id: 25440,
         name: "Deathly Slash",
-        iconSrc: "/images/skills/BL_Skill_01_27.webp",
+        iconSrc: "./images/skills/BL_Skill_01_27.webp",
     },
     {
         id: 25110,
         name: "Soul Absorber",
-        iconSrc: "/images/skills/BL_Skill_01_7.webp",
+        iconSrc: "./images/skills/BL_Skill_01_7.webp",
     },
     {
         id: 25080,
         name: "Death Sentence",
-        iconSrc: "/images/skills/BL_Skill_01_4.webp",
+        iconSrc: "./images/skills/BL_Skill_01_4.webp",
     },
     {
         id: 25180,
         name: "Void Strike",
-        iconSrc: "/images/skills/BL_Skill_01_14.webp",
+        iconSrc: "./images/skills/BL_Skill_01_14.webp",
     },
     {
         id: 25090,
         name: "Twin Shadows",
-        iconSrc: "/images/skills/BL_Skill_01_14.webp",
+        iconSrc: "./images/skills/BL_Skill_01_5.webp",
     },
     {
         id: 25130,
         name: "Turning Slash",
-        iconSrc: "/images/skills/BL_Skill_01_9.webp",
+        iconSrc: "./images/skills/BL_Skill_01_9.webp",
     },
     {
         id: 25070,
         name: "Earth Cleaver",
-        iconSrc: "/images/skills/BL_Skill_01_3.webp",
+        iconSrc: "./images/skills/BL_Skill_01_3.webp",
     },
     {
         id: 25350,
         name: "Blade Assault",
-        iconSrc: "/images/skills/BL_Skill_01_19.webp",
+        iconSrc: "./images/skills/BL_Skill_01_19.webp",
     },
     {
         id: 25160,
         name: "Maelstrom",
-        iconSrc: "/images/skills/BL_Skill_01_12.webp",
+        iconSrc: "./images/skills/BL_Skill_01_12.webp",
     },
     {
         id: 25120,
         name: "Spincutter",
-        iconSrc: "/images/skills/BL_Skill_01_8.webp",
+        iconSrc: "./images/skills/BL_Skill_01_8.webp",
     }
 ];
 
@@ -197,13 +207,13 @@ export function load(): any {
     const summary1 = fakeSummary({
         name: "Player1",
         distribution: dist,
-        topDamageFrom: 7.34e10,
+        topDamageFrom: 3.34e10,
         topDamageTo: 7.65e10,
         critRateFrom: 0.75,
         critRateTo: 0.90,
         backAttacksFrom: 0.75,
         backAttacksTo: 0.9,
-        durationSeconds: 600
+        durationSeconds: Math.floor(Math.random() * (15 * 60 - 10 * 60)) + 10 * 60
     });
 
     dist["Death Trance"] -= 0.03;
@@ -215,17 +225,154 @@ export function load(): any {
         name: "Player2",
         distribution: dist,
         topDamageFrom: 3.34e10,
-        topDamageTo: 3.65e10,
+        topDamageTo: 7.65e10,
         critRateFrom: 0.4,
         critRateTo: 0.8,
         backAttacksFrom: 0.75,
         backAttacksTo: 0.9,
-        durationSeconds: 600
+        durationSeconds: Math.floor(Math.random() * (15 * 60 - 10 * 60)) + 10 * 60
     });
 
     return {
         summary1,
         summary2,
+    };
+}
+
+export function echarts(node: HTMLElement, option: EChartsOption | undefined) {
+	const chart = charts.init(node,  "dark", {
+		renderer: "svg"
+	});
+
+	if(!option) {
+		chart.showLoading();
+	}
+    else {
+        chart.hideLoading();
+        chart.setOption(option!);
+    }
+
+	return {
+		update(option: EChartsOption) {
+			chart.hideLoading();
+			chart.setOption(option!);
+		},
+		destroy() {
+			chart.dispose();
+		}
+	}
+}
+
+export function buildComparisonRows(p1: Player, p2: Player): SkillComparison[] {
+    const names = Array.from(new Set([
+        ...p1.skills.map(s => s.name),
+        ...p2.skills.map(s => s.name)
+    ])).sort();
+
+    const result = names.map(name => {
+        const skill1 = p1.skills.find(s => s.name === name);
+        const skill2 = p2.skills.find(s => s.name === name);
+        const icon = skill1?.iconSrc || skill2?.iconSrc || "";
+
+        return {
+            name,
+            icon,
+            skill1,
+            skill2
+        };
+    });
+
+    result.sort((a, b) => {
+        const damageA = Math.max(
+            a.skill1?.totalDamage.raw || 0,
+            a.skill2?.totalDamage.raw || 0
+        );
+        const damageB = Math.max(
+            b.skill1?.totalDamage.raw || 0,
+            b.skill2?.totalDamage.raw || 0
+        );
+        return damageB - damageA; // descending
+    });
+
+    return result;
+}
+
+export function generateDamageDistributionChart(player1: Player | undefined, player2: Player): EChartsOption | undefined {
+    if (!player1) {
+        return undefined;
+    }
+
+    const skillNames = player1.skills.map((skill) => skill.name);
+    const player1DamageData = player1.skills.map((skill) => skill.totalDamage.raw);
+    const player2DamageData = player2.skills.map((skill) => skill.totalDamage.raw);
+
+    return {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow',
+            },
+            formatter: (params: any) => {
+                return params
+                    .map((p: any) => {
+                        const value = formatNumber(p.value);
+                        return `<strong>${p.seriesName}</strong>: ${value}`;
+                    })
+                    .join('<br/>');
+            },
+        },
+        height: 130,
+        legend: {
+            data: [player1.name, player2.name],
+            textStyle: {
+                color: '#fff',
+            },
+        },
+        xAxis: {
+          type: 'category',
+            data: skillNames,
+            axisLabel: {
+                color: '#fff',
+            },
+        },
+        yAxis: {
+            type: 'value',
+            splitNumber: 4,
+            axisLabel: {
+                color: '#fff',
+                formatter: (value: number) => {
+                    if (value >= 1e9) return (value / 1e9).toFixed(1) + 'b';
+                    if (value >= 1e6) return (value / 1e6).toFixed(1) + 'm';
+                    if (value >= 1e3) return (value / 1e3).toFixed(1) + 'k';
+                    return value.toString();
+                },
+            },
+        },
+        series: [
+            {
+                name: player1.name,
+                type: 'bar',
+                data: player1DamageData,
+                itemStyle: {
+                color: '#1E40AF',
+                },
+            },
+            {
+                name: player2.name,
+                type: 'bar',
+                data: player2DamageData,
+                itemStyle: {
+                    color: '#065F46',
+                },
+            },
+        ],
+        backgroundColor: '#1F2937',
+        grid: {
+            left: '10%',
+            right: '10%',
+            top: '10%',
+            bottom: '10%',
+        },
     };
 }
 
@@ -235,6 +382,7 @@ function formatNumber(num: number): string {
     if (num >= 1e3) return (num / 1e3).toFixed(1) + "k";
     return num.toString();
 }
+
 
 function formatPercent(value: number): string {
     return `${(value * 100).toFixed(1)}%`;
