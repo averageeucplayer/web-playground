@@ -2,6 +2,7 @@
     import type { LoaLogsEncounter, LoaLogsEntity } from "$lib/models";
     import { loadEncounters, loadEntities, readAsArrayBuffer } from "$lib/utils";
     import initSqlJs from "sql.js";
+	import { IconFolder, IconDatabase } from "@tabler/icons-svelte";
 
     let fileInput: HTMLInputElement | null = null;
     let file: File | null = null;
@@ -87,7 +88,7 @@
         ondrop={onDrop}
         ondragover={onDragOver}
     >
-        <p class="mb-2">Drag & Drop your file here</p>
+        <div class="mb-2 flex justify-center"><span class="mr-2">Drag & Drop your</span> <IconDatabase className=""/> <span class="ml-2">here</span></div>
         <p class="text-xs text-gray-400">or click to browse</p>
 
         <input
@@ -105,21 +106,33 @@
         </div>
     {/if}
 
+    {#if state.isEmpty}
+        <div class="mt-6 p-4 text-gray-400 bg-gray-800 rounded-lg w-full md:w-96">
+            <div class="flex items-center">
+                <IconFolder/>
+                <div class="ml-2">
+                    <p class="text-lg font-bold">No Data Found</p>
+                    <p>The database is empty or the file is not valid.</p>
+                </div>
+            </div>
+        </div>
+    {/if}
+
     {#if state.totalEncounters || state.totalEntities}
-    <div class="mt-6 text-white">
-        <h2 class="text-xl font-bold mb-2">Summary</h2>
-        <p>Total Encounters: {state.totalEncounters}</p>
-        <p>Total Entities: {state.totalEntities}</p>
+        <div class="mt-6 text-white w-128 max-h-[500px] overflow-auto bg-gray-800 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-2">Summary</h2>
+            <p>Total Encounters: {state.totalEncounters}</p>
+            <p>Total Entities: {state.totalEntities}</p>
 
-        <h3 class="mt-4 text-lg font-semibold">First Encounter</h3>
-        {#if state.encounters.length}
-            <pre class="bg-gray-800 p-4 rounded">{JSON.stringify(state.encounters[0], null, 2)}</pre>
-        {/if}
+            <h3 class="mt-4 text-lg font-semibold">First Encounter</h3>
+            {#if state.encounters.length}
+                <pre class="bg-gray-700 p-4 rounded text-sm overflow-x-auto">{JSON.stringify(state.encounters[0], null, 2)}</pre>
+            {/if}
 
-        <h3 class="mt-4 text-lg font-semibold">First Entity</h3>
-        {#if state.entities.length}
-            <pre class="bg-gray-800 p-4 rounded">{JSON.stringify(state.entities[0], null, 2)}</pre>
-        {/if}
-    </div>
-{/if}
+            <h3 class="mt-4 text-lg font-semibold">First Entity</h3>
+            {#if state.entities.length}
+                <pre class="bg-gray-700 p-4 rounded text-sm overflow-x-auto">{JSON.stringify(state.entities[0], null, 2)}</pre>
+            {/if}
+        </div>
+    {/if}
 </div>
