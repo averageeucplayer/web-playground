@@ -1,8 +1,12 @@
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/geist-mono";
+@import 'tailwindcss';
 
-@import "tailwindcss";
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton/optional/presets';
+@import '@skeletonlabs/skeleton/themes/cerberus';
+
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
 html, body {
     background: black;
+    height: 100%;
 }

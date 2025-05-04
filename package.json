@@ -37,7 +37,8 @@
     "sorted-btree": "^1.8.1",
     "sql.js": "^1.13.0",
     "tailwindcss": "^4.0.3",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@skeletonlabs/skeleton": "^3.1.1",
@@ -51,6 +52,7 @@
     "@types/markdown-it": "^14.1.1",
     "@types/nprogress": "^0.2.0",
     "@types/pako": "^2.0.3",
+    "@types/sql.js": "^1.4.9",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "echarts": "^5.4.2",
