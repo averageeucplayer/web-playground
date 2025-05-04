@@ -34,7 +34,7 @@
 
 	function onSubmit() {
 		const id = createComparison([state.player1, state.player2]);
-		goto(`/#/comparison/#/${id}`);
+		goto(`#/comparison/#/${id}`);
 	}
 
 	function onExport() {

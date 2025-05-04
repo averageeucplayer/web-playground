@@ -20,8 +20,6 @@
     });
 
     onMount(() => {
-       
-
         onLoad();
     });
 
@@ -44,12 +42,6 @@
             type: "loaded",
             comparison
         };
-        // state.type = "loaded" as const;
-        // state.comparison = comparison;
-    }
-
-    function onTab(event: MouseEvent) {
-
     }
 
 </script>
